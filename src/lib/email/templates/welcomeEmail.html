@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            color: #e0e6ed;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1a1f2e 0%, #252d3d 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+        
+        .intro-text {
+            color: #c5d0e0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .glass-card {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-title {
+            color: #a78bfa;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            background: rgba(96, 165, 250, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #60a5fa;
+        }
+        
+        .detail-label {
+            color: #8b94a8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: #e0e6ed;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .course-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .course-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .course-label {
+            color: #8b94a8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        
+        .course-value {
+            color: #e0e6ed;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(139, 92, 246, 0.3);
+        }
+        
+        .next-steps {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .next-steps-title {
+            color: #60a5fa;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .next-steps-list {
+            list-style: none;
+            color: #c5d0e0;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .next-steps-list li {
+            margin-bottom: 8px;
+        }
+        
+        .next-steps-list li:before {
+            content: "→ ";
+            color: #60a5fa;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .footer-text {
+            color: #8b94a8;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        
+        .social-links a {
+            display: inline-block;
+            color: #60a5fa;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 12px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.3) 50%, transparent 100%);
+            margin: 20px 0;
+        }
+        
+        .certificate-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            
+            .card-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚀 NEXUS ORBIT</div>
+            <div class="header-title">Welcome Aboard!</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">Hello {{STUDENT_NAME}},</div>
+            
+            <p class="intro-text">
+                Thank you for joining Nexus Orbit Academy! Your learning journey begins today. We're excited to have you as part of our community of aspiring aerospace engineers, AI/ML enthusiasts, and space explorers.
+            </p>
+            
+            <!-- Student Details -->
+            <div class="glass-card">
+                <div class="card-title">Your Registration Details</div>
+                <div class="card-content">
+                    <div class="detail-item">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">{{STUDENT_NAME}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">{{STUDENT_EMAIL}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Registration ID</div>
+                        <div class="detail-value">{{REGISTRATION_ID}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Registration Date</div>
+                        <div class="detail-value">{{REGISTRATION_DATE}}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Information -->
+            <div class="course-card">
+                <div class="card-title">Course Information <span class="certificate-badge">Premium</span></div>
+                <div class="course-grid">
+                    <div class="course-item">
+                        <div class="course-label">Course Name</div>
+                        <div class="course-value">{{COURSE_NAME}}</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-label">Duration</div>
+                        <div class="course-value">{{COURSE_DURATION}}</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-label">Level</div>
+                        <div class="course-value">{{COURSE_LEVEL}}</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-label">Department</div>
+                        <div class="course-value">{{COURSE_DEPARTMENT}}</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-label">Learning Mode</div>
+                        <div class="course-value">{{LEARNING_MODE}}</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-label">Instructor</div>
+                        <div class="course-value">{{INSTRUCTOR}}</div>
+                    </div>
+                    <div class="course-item" style="grid-column: 1 / -1;">
+                        <div class="course-label">Certificate</div>
+                        <div class="course-value">✓ Official Nexus Orbit Academy Certificate Upon Completion</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <div class="next-steps-title">🎯 What's Next?</div>
+                <ul class="next-steps-list">
+                    <li>Log in to your student dashboard to access course materials</li>
+                    <li>Download the welcome packet and syllabus (attached)</li>
+                    <li>Set up your profile and learning preferences</li>
+                    <li>Join our community Discord for peer learning</li>
+                    <li>Schedule your first mentoring session (if applicable)</li>
+                </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="buttons-container">
+                <a href="{{WEBSITE_URL}}" class="btn btn-primary">Visit Website</a>
+                <a href="{{DASHBOARD_URL}}" class="btn btn-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Nexus Orbit Academy</strong><br>
+                Official AI & Aerospace Learning Platform<br>
+                <br>
+                If you have any questions or need assistance, reply to this email or contact us at <strong>support@nexus-orbit.academy</strong>
+            </div>
+            
+            <div class="social-links">
+                <a href="#">Twitter</a> • 
+                <a href="#">LinkedIn</a> • 
+                <a href="#">YouTube</a> • 
+                <a href="#">Discord</a>
+            </div>
+            
+            <div class="footer-text" style="margin-top: 20px; font-size: 11px;">
+                © 2026 Nexus Orbit Academy. All rights reserved. | 
+                <a href="#" style="color: #60a5fa; text-decoration: none;">Privacy Policy</a> | 
+                <a href="#" style="color: #60a5fa; text-decoration: none;">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

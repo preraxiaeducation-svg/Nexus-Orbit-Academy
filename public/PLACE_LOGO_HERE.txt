@@ -1,0 +1,15 @@
+Please place the provided Nexus Academy logo image file in this project's `public/` folder
+and name it exactly `logo.png` so the site automatically uses it.
+
+Steps:
+1. Save the image you uploaded here to: `c:\Users\gulsh\OneDrive\Desktop\Nexus-Orbit-Academy\public\logo.png`
+2. Restart the Next.js dev server (if running):
+
+   npm run dev
+
+3. The header and other places use `/logo.png` via `src/config/branding.ts`.
+
+Notes:
+- I could not directly write the uploaded binary image into the repository from this chat. If you want, you can paste the image file into the `public/` folder and I'll verify the change and finish the remaining todo steps.
+
+If you'd like, I can also create a short PowerShell command you can run to download and save the image if you provide a URL.

@@ -1,0 +1,279 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("STUDENT") // STUDENT | ADMIN
+  avatar       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  enrollments   Enrollment[]
+  examAttempts  ExamAttempt[]
+  certificates  Certificate[]
+  payments      Payment[]
+  chatMessages  ChatMessage[]
+
+  @@map("users")
+}
+
+model Course {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  description      String
+  longDescription  String?  @map("long_description")
+  department       String   // AEROSPACE | AI_ML | SPACE_TECH | UNIVERSE
+  level            String   // BEGINNER | INTERMEDIATE | ADVANCED
+  price            Float    @default(0)
+  thumbnail        String?
+  instructor       String   @default("Nexus Orbit Faculty")
+  instructorBio    String?  @map("instructor_bio")
+  syllabusOverview String?  @map("syllabus_overview")
+  durationHours    Int?     @map("duration_hours")
+  isPublished      Boolean  @default(false) @map("is_published")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  lessons               Lesson[]
+  enrollments           Enrollment[]
+  exams                 Exam[]
+  certificates          Certificate[]
+  payments              Payment[]
+  courseNotifications   CourseNotification[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id              String   @id @default(cuid())
+  courseId        String   @map("course_id")
+  chapterTitle    String   @map("chapter_title")
+  title           String
+  orderIndex      Int      @map("order_index")
+  videoId         String?  @map("video_id")
+  videoUrl        String?  @map("video_url")
+  durationSeconds Int?     @map("duration_seconds")
+  notes           String?
+  quiz            String?  // JSON string: [{q, options, correct, points, negMarks}]
+  isPreview       Boolean  @default(false) @map("is_preview")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  course         Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
+  chatMessages   ChatMessage[]
+
+  @@map("lessons")
+}
+
+model Enrollment {
+  id                 String   @id @default(cuid())
+  userId             String   @map("user_id")
+  courseId           String   @map("course_id")
+  entranceExamPassed Boolean  @default(false) @map("entrance_exam_passed")
+  enrolledAt         DateTime @default(now()) @map("enrolled_at")
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id             String   @id @default(cuid())
+  enrollmentId   String   @map("enrollment_id")
+  lessonId       String   @map("lesson_id")
+  watchPercent   Float    @default(0) @map("watch_percent")
+  videoCompleted Boolean  @default(false) @map("video_completed")
+  quizPassed     Boolean  @default(false) @map("quiz_passed")
+  completed      Boolean  @default(false)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, lessonId])
+  @@map("lesson_progress")
+}
+
+model Exam {
+  id                String   @id @default(cuid())
+  courseId          String   @map("course_id")
+  type              String   // ENTRANCE | FINAL
+  title             String
+  timeLimitMinutes  Int      @default(60) @map("time_limit_minutes")
+  passingScore      Float    @default(40) @map("passing_score")
+  negativeMarking   Float    @default(0) @map("negative_marking")
+  questions         String   // JSON: [{id, type, question, options, correct, points, negMarks, explanation}]
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  examAttempts ExamAttempt[]
+
+  @@map("exams")
+}
+
+model ExamAttempt {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  examId           String   @map("exam_id")
+  score            Float    @default(0)
+  maxScore         Float    @default(0) @map("max_score")
+  passed           Boolean  @default(false)
+  answers          String   @default("{}") // JSON
+  tabSwitches      Int      @default(0) @map("tab_switches")
+  timeTakenSeconds Int?     @map("time_taken_seconds")
+  attemptedAt      DateTime @default(now()) @map("attempted_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@map("exam_attempts")
+}
+
+model Certificate {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  courseId       String   @map("course_id")
+  certificateUid String   @unique @map("certificate_uid")
+  issuedAt       DateTime @default(now()) @map("issued_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("certificates")
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  courseId          String   @map("course_id")
+  razorpayOrderId   String?  @map("razorpay_order_id")
+  razorpayPaymentId String?  @map("razorpay_payment_id")
+  amount            Float
+  currency          String   @default("INR")
+  status            String   @default("PENDING") // PENDING | SUCCESS | FAILED
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  lessonId  String   @map("lesson_id")
+  role      String   // user | assistant
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model CourseNotification {
+  id                String    @id @default(cuid())
+  courseId          String?   @map("course_id")
+  courseSlug        String?   @map("course_slug")
+  courseTitle       String    @map("course_title")
+  department        String?   @map("department")
+  level             String?   @map("level")
+  name              String?
+  email             String
+  phone             String?
+  alreadyRegistered Boolean   @default(false) @map("already_registered")
+  status            String    @default("PENDING")
+  notifiedAt        DateTime? @map("notified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@index([courseId])
+  @@index([email])
+  @@index([status])
+  @@map("course_notifications")
+}
+
+model StudentLead {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String
+  profession String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("student_leads")
+}
+
+model InterestRegistration {
+  id                    String   @id @default(cuid())
+  fullName              String   @map("full_name")
+  gender                String
+  dateOfBirth           String   @map("date_of_birth")
+  nationality           String
+  email                 String
+  mobileNumber          String   @map("mobile_number")
+  country               String
+  state                 String
+  city                  String
+  highestQualification  String   @map("highest_qualification")
+  schoolCollege         String   @map("school_college")
+  preferredDepartment   String   @map("preferred_department")
+  preferredCourseLevel  String   @map("preferred_course_level")
+  preferredLanguage     String   @map("preferred_language")
+  status                String   @default("PENDING")
+  convertedToUserId     String?  @map("converted_to_user_id")
+  convertedAt           DateTime? @map("converted_at")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  registrationSuccess   RegistrationSuccess?
+
+  @@map("interest_registrations")
+}
+
+model RegistrationSuccess {
+  id                        String   @id @default(cuid())
+  interestRegistrationId    String   @unique @map("interest_registration_id")
+  studentName               String   @map("student_name")
+  email                     String
+  registeredCourse          String   @map("registered_course")
+  registrationId            String   @map("registration_id")
+  emailStatus               String   @default("PENDING") // PENDING | SENT | FAILED
+  emailAttempts             Int      @default(0) @map("email_attempts")
+  lastEmailAttemptAt        DateTime? @map("last_email_attempt_at")
+  pdfGenerated              Boolean  @default(false) @map("pdf_generated")
+  pdfPath                   String?  @map("pdf_path")
+  confettiShown             Boolean  @default(false) @map("confetti_shown")
+  registrationCompletedAt   DateTime @default(now()) @map("registration_completed_at")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  updatedAt                 DateTime @updatedAt @map("updated_at")
+
+  interestRegistration      InterestRegistration @relation(fields: [interestRegistrationId], references: [id])
+
+  @@index([email])
+  @@index([emailStatus])
+  @@map("registration_successes")
+}
+

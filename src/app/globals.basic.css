@@ -1,0 +1,16 @@
+/* Minimal fallback styles for CI build */
+:root {
+  --color-bg-primary: #060814;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg-primary);
+  color: #fff;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+a { color: #8b5cf6; }
+.glass-card { background: rgba(10,12,22,0.6); border-radius: 12px; }
+.btn-primary { background: #7b2ff7; color: white; padding: 10px 14px; border-radius: 8px; display: inline-block; }
+.progress-bar { background: rgba(255,255,255,0.05); height: 8px; border-radius: 8px; }
+.progress-bar-fill { background: linear-gradient(90deg,#00d964,#00ff80); height: 8px; border-radius: 8px; }
