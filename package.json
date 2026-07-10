@@ -24,6 +24,8 @@
   "author": "Nexus Orbit Academy",
   "license": "ISC",
   "dependencies": {
+    "@emnapi/core": "^1.11.2",
+    "@emnapi/runtime": "^1.11.2",
     "@google/genai": "^2.11.0",
     "@prisma/client": "^4.16.1",
     "@types/bcryptjs": "^2.4.6",
