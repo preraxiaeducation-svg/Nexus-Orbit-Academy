@@ -48,15 +48,13 @@ export function RegistrationSuccessModal({
 
   useEffect(() => {
     if (isOpen) {
-      // Trigger confetti after a short delay
-      const timer = setTimeout(() => setShowConfetti(true), 300);
-
-      // Auto-hide confetti after 8 seconds
-      const confettiTimer = setTimeout(() => setShowConfetti(false), 3000);
+      setShowConfetti(false);
+      const timer = window.setTimeout(() => setShowConfetti(true), 100);
+      const confettiTimer = window.setTimeout(() => setShowConfetti(false), 3200);
 
       return () => {
-        clearTimeout(timer);
-        clearTimeout(confettiTimer);
+        window.clearTimeout(timer);
+        window.clearTimeout(confettiTimer);
       };
     }
   }, [isOpen]);

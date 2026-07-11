@@ -160,6 +160,7 @@ export function InterestRegistrationForm({ onSuccess, onCancel }: InterestRegist
       const data = await res.json();
 
       if (!res.ok) {
+        setLoading(false);
         setSubmitError(data?.error || "We could not save your interest right now.");
         return;
       }
@@ -178,17 +179,21 @@ export function InterestRegistrationForm({ onSuccess, onCancel }: InterestRegist
         }),
       });
 
-      // Mark as submitted first (triggers re-render)
+      setLoading(false);
+
+      // Mark as submitted (triggers re-render to show thank you page)
       setSubmitted(true);
 
-      // Show modal with slight delay to ensure state is synced
-      setTimeout(() => setShowSuccessModal(true), 50);
+      // Show modal after the thank-you view is mounted
+      requestAnimationFrame(() => {
+        setShowSuccessModal(true);
+      });
 
       onSuccess?.(data.registration);
-    } catch {
-      setSubmitError("Network error. Please try again.");
-    } finally {
+    } catch (error) {
+      console.error("Form submission error:", error);
       setLoading(false);
+      setSubmitError("Network error. Please try again.");
     }
   };
 
