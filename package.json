@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "International-standard online academy for Aerospace, AI/ML, Space Technology, and Astronomy",
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
@@ -12,7 +12,11 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "setup": "prisma generate && prisma db push && npx tsx prisma/seed.ts"
+    "setup": "prisma generate && prisma db push && npx tsx prisma/seed.ts",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "keywords": [
     "academy",
@@ -27,6 +31,7 @@
     "@emnapi/core": "^1.11.2",
     "@emnapi/runtime": "^1.11.2",
     "@google/genai": "^2.11.0",
+    "@opennextjs/cloudflare": "^1.20.1",
     "@prisma/client": "^4.16.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^26.1.0",
@@ -55,6 +60,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.2",
-    "tsx": "^4.23.0"
+    "tsx": "^4.23.0",
+    "wrangler": "^4.110.0"
   }
 }
