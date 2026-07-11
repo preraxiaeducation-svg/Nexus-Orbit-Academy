@@ -1,11 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { sendWelcomeEmailViaResend, WelcomeEmailData } from "@/lib/email/resendService";
-import { generateWelcomePDF, WelcomePDFData } from "@/lib/pdf/pdfGenerator";
-import { readFileSync } from "fs";
-import { join } from "path";
-import { cwd } from "process";
 
 /**
  * Process registration success workflow
@@ -14,7 +9,6 @@ import { cwd } from "process";
 export async function processRegistrationSuccess(registrationId: string): Promise<{
   success: boolean;
   data?: {
-    pdfBuffer?: Buffer;
     emailStatus: string;
     message: string;
   };
@@ -36,67 +30,11 @@ export async function processRegistrationSuccess(registrationId: string): Promis
     // Get course information based on preferred department
     const courseInfo = getCourseInfo(registration.preferredDepartment, registration.preferredCourseLevel);
 
-    // Generate welcome PDF
-    let pdfBuffer: Buffer | undefined;
-    try {
-      pdfBuffer = await generateWelcomePDF({
-        studentName: registration.fullName,
-        registrationId: registration.id,
-        courseName: courseInfo.courseName,
-        registrationDate: new Date(registration.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        courseDuration: courseInfo.duration,
-        courseLevel: registration.preferredCourseLevel,
-        courseDepartment: getCourseDisplayName(registration.preferredDepartment),
-        courseInstructor: "Nexus Orbit Academy Faculty",
-        courseModules: courseInfo.modules,
-        courseBenefits: courseInfo.benefits,
-        learningOutcomes: courseInfo.outcomes,
-      });
-    } catch (pdfError) {
-      console.error("PDF generation failed:", pdfError);
-      // Continue even if PDF fails
-    }
-
-    // Load email template
-    const emailTemplatePath = join(process.cwd(), "src/lib/email/templates/welcomeEmail.html");
-    let emailTemplate = "";
-    try {
-      emailTemplate = readFileSync(emailTemplatePath, "utf-8");
-    } catch (templateError) {
-      console.error("Failed to load email template:", templateError);
-      emailTemplate = getDefaultEmailTemplate();
-    }
-
-    // Send welcome email via Resend with PDF attachment
-    const emailResult = await sendWelcomeEmailViaResend(
-      {
-        studentName: registration.fullName,
-        studentEmail: registration.email,
-        registrationId: registration.id,
-        registrationDate: new Date(registration.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        courseName: courseInfo.courseName,
-        courseDuration: courseInfo.duration,
-        courseLevel: registration.preferredCourseLevel,
-        courseDepartment: getCourseDisplayName(registration.preferredDepartment),
-        courseInstructor: "Nexus Orbit Academy Faculty",
-        learningMode: "Online Self-Paced",
-        websiteUrl: "https://nexus-orbit.academy",
-        dashboardUrl: "https://nexus-orbit.academy/dashboard",
-      },
-      emailTemplate,
-      pdfBuffer
-    );
+    const emailStatus = "DISABLED";
+    const emailMessage = "Registration successful. Email sending is disabled.";
 
     // Create or update registration success record
-    const registrationSuccess = await prisma.registrationSuccess.upsert({
+    await prisma.registrationSuccess.upsert({
       where: { interestRegistrationId: registrationId },
       create: {
         interestRegistrationId: registrationId,
@@ -104,28 +42,25 @@ export async function processRegistrationSuccess(registrationId: string): Promis
         email: registration.email,
         registeredCourse: courseInfo.courseName,
         registrationId: registration.id,
-        emailStatus: emailResult.success ? "SENT" : "FAILED",
-        emailAttempts: 1,
+        emailStatus,
+        emailAttempts: 0,
         lastEmailAttemptAt: new Date(),
-        pdfGenerated: pdfBuffer !== null,
-        pdfPath: `welcome_${registration.id}.pdf`,
+        pdfGenerated: false,
+        pdfPath: null,
       },
       update: {
-        emailStatus: emailResult.success ? "SENT" : "FAILED",
-        emailAttempts: { increment: 1 },
+        emailStatus,
+        emailAttempts: { increment: 0 },
         lastEmailAttemptAt: new Date(),
-        pdfGenerated: pdfBuffer !== null,
+        pdfGenerated: false,
       },
     });
 
     return {
       success: true,
       data: {
-        pdfBuffer,
-        emailStatus: emailResult.success ? "SENT" : "FAILED",
-        message: emailResult.success
-          ? "Registration successful! Welcome email has been sent."
-          : "Registration successful. Email delivery is being retried.",
+        emailStatus,
+        message: emailMessage,
       },
     };
   } catch (error) {

@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       {
         success: true,
         message: result.data?.message || "Registration processed successfully",
-        emailStatus: result.data?.emailStatus || "PENDING",
+        emailStatus: result.data?.emailStatus || "DISABLED",
         registrationId,
       },
       { status: 200 }

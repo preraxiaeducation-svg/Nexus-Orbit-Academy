@@ -76,7 +76,6 @@ export function InterestRegistrationForm({ onSuccess, onCancel }: InterestRegist
     preferredDepartment: string;
     createdAt: string;
   } | null>(null);
-  const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
 
   const departmentOptions = useMemo(
     () => [
@@ -184,20 +183,6 @@ export function InterestRegistrationForm({ onSuccess, onCancel }: InterestRegist
 
       // Show modal with slight delay to ensure state is synced
       setTimeout(() => setShowSuccessModal(true), 50);
-
-      // Trigger registration success workflow asynchronously
-      setIsProcessingSuccess(true);
-      try {
-        await fetch("/api/registration/success", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ registrationId }),
-        });
-      } catch (error) {
-        console.error("Failed to process registration success:", error);
-      } finally {
-        setIsProcessingSuccess(false);
-      }
 
       onSuccess?.(data.registration);
     } catch {
